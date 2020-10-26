@@ -130,7 +130,13 @@ export class WebpackConfigHelper {
 		} else {
 			this.env = 'production';
 		}
-
+			
+		// add custom env variables	
+		this.customEnv = {};
+		Object.keys(process?.env || {}).forEach((key) => {
+				this.customEnv[key] = JSON.stringify(process?.env?.[key]);	
+		});
+			
 		// Create the outputPath, because we would be needing that
 		const { outputPath } = this.config;
 		// and filename and inner directory name
@@ -279,6 +285,7 @@ export class WebpackConfigHelper {
 		let plugins: webpack.Plugin[] = [
 			// Define env
 			new webpack.DefinePlugin({
+				...this.customEnv,
 				'process.env.NODE_ENV': JSON.stringify(this.env),
 				'process.env.BABEL_ENV': JSON.stringify(this.env),
 				// Our own access to project config from the modules
